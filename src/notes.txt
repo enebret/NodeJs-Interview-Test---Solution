@@ -1,0 +1,49 @@
+client here is the url created via the api that gets populated with params(username and steps)
+once server gets data, it should update or store and send back the data via a websocket payload to client
+
+// * TODO: Implement function for updating user's step data in store
+// * TODO: Function for getting user's step data may need some adjustments
+module.exports = function stepService(store) {
+  const service = {};
+  //update user step data in store use service.get() to get username from store 
+  service.get = (username) => store[username];
+
+  service.add = (username, ts, newSteps) => {
+    // Assume that `store` is initially an empty object {}. An example `store` is:
+    // {
+    //   jenna: {
+    //     ts: 1503256778463,
+    //     cumulativeSteps: 12323,
+    //   },
+    //   james: {
+    //     ts: 1503256824767,
+    //     cumulativeSteps: 587,
+    //   },
+    // }
+
+  };
+
+  return service;
+};
+
+const StepService = require('./step.service');
+const restAPI = require('./rest-api');
+const wsServerAPI = require('./wsServer-api');
+
+module.exports = class StepTracker {
+  constructor(store) {
+    if (store) {
+      this.store = store;
+    } else {
+      this.store = {};
+    }
+
+    const stepService = StepService(this.store);
+
+    // Start serving the REST API
+    restAPI(stepService);
+
+    // Start serving the WebSocket API
+    wsServerAPI(stepService);
+  }
+};
